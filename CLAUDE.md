@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Language
+
+Always respond to the user in Japanese (日本語). This applies to all chat output — explanations, summaries, and questions — regardless of the language the user writes in. Code, identifiers, commit messages, and file contents are unaffected by this rule and should follow normal engineering conventions.
+
 ## Project state
 
 This repository is currently a greenfield project — it contains no application source code yet, only a LICENSE (MIT) and project-management tooling. There is no README, package manifest, build system, linter, or test suite to reference. Do not assume any particular language, framework, or directory layout until one has actually been established in the repo; check what exists before writing commands or code.
