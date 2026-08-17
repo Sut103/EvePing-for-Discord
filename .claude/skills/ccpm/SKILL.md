@@ -13,19 +13,28 @@ Requirements live in files, not heads. Every feature starts as a PRD, becomes a 
 
 ## File Conventions
 
-Before doing anything, read `references/conventions.md` for path standards, frontmatter schemas, and GitHub operation rules. These apply to all phases.
+Before doing anything, read `references/conventions.md` for path standards, frontmatter schemas, GitHub operation rules, and the TDD Rule (red → green). These apply to all phases.
+
+## Test-Driven Development
+
+CCPM enforces strict TDD across the whole lifecycle — this is not a separate phase, it's woven into Plan, Structure, and Execute:
+- **Plan**: every epic defines a concrete `Test Strategy` (frameworks, test types, coverage) before decomposition.
+- **Structure**: every task defines a `Test Plan` (one test case per acceptance criterion) before its Technical Details.
+- **Execute**: every agent writes the failing test (red) before the passing implementation (green) for each Test Plan item — never the reverse.
+
+See `references/conventions.md` for the full rule.
 
 ## The Five Phases
 
 ### 1. Plan — Capture requirements
 **When**: User wants to define a new feature, product requirement, or scope of work.
 **Read**: `references/plan.md`
-**Covers**: Writing PRDs through guided brainstorming, converting PRDs to technical epics.
+**Covers**: Writing PRDs through guided brainstorming, converting PRDs to technical epics (including a concrete Test Strategy).
 
 ### 2. Structure — Break it down
 **When**: An epic exists and needs to be decomposed into concrete tasks.
 **Read**: `references/structure.md`
-**Covers**: Epic decomposition into numbered task files with dependencies and parallelization.
+**Covers**: Epic decomposition into numbered task files with dependencies, parallelization, and a TDD Test Plan per task.
 
 ### 3. Sync — Push to GitHub
 **When**: Local epic/tasks need to become GitHub issues, progress needs to be posted as comments, or a bug is found and needs a linked issue created.

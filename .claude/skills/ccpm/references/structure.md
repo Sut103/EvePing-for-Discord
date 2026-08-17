@@ -22,8 +22,9 @@ Read the epic fully. Analyze for parallelism — which pieces of work can happen
 - Data: models, schemas, migrations
 - API: endpoints, services, integration
 - UI: components, pages, styling
-- Tests: unit, integration, e2e
 - Docs: README, API docs, changelogs
+
+Every task above that produces behavior (Data/API/UI, etc.) carries its own tests written TDD-style (red → green, see `references/conventions.md`) — testing is not a separate task type. Only use a standalone "Tests" task for suites that genuinely span multiple implementation tasks (e.g. a cross-feature e2e flow) and can't be attached to a single task's Test Plan.
 
 **Parallelization strategy by epic size:**
 - Small (<5 tasks): create sequentially
@@ -64,6 +65,10 @@ conflicts_with: []
 ## Acceptance Criteria
 - [ ]
 
+## Test Plan
+- [ ] <failing test to write first (red)> — covers acceptance criterion above
+- [ ] <failing test to write first (red)> — covers acceptance criterion above
+
 ## Technical Details
 
 ## Dependencies
@@ -73,10 +78,13 @@ conflicts_with: []
 - Hours: N
 
 ## Definition of Done
-- [ ] Code implemented
-- [ ] Tests written and passing
+- [ ] Failing tests written first (red), one per Test Plan item, and confirmed to fail for the right reason
+- [ ] Implementation makes all Test Plan tests pass (green)
+- [ ] Full relevant test suite passes — no other tests broken
 - [ ] Code reviewed
 ```
+
+Every acceptance criterion must map to at least one Test Plan entry — a task with acceptance criteria but no corresponding test case is incomplete. See `references/conventions.md` for the TDD Rule this enforces.
 
 **Numbering**: sequential 001.md, 002.md, etc. Tasks are renamed to GitHub issue numbers after sync — do not hard-code dependencies by filename, use the `depends_on` array.
 

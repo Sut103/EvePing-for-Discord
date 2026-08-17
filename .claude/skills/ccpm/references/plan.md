@@ -85,6 +85,10 @@ github: (will be set on sync)
 ### Frontend Components
 ### Backend Services
 ### Infrastructure
+## Test Strategy
+### Test Types & Tools
+### Coverage Expectations
+### TDD Notes
 ## Implementation Strategy
 ## Task Breakdown Preview
 ## Dependencies
@@ -96,6 +100,9 @@ github: (will be set on sync)
 - Aim for ≤10 tasks total — prefer simplicity over completeness.
 - Look for ways to leverage existing functionality before creating new code.
 - Identify parallelization opportunities in the task breakdown preview.
+- `Test Strategy` must be concrete, not a placeholder: name the test framework(s) and runner commands, what gets unit- vs integration- vs e2e-tested, and any coverage bar. Every task decomposed from this epic will inherit strict TDD (red → green, see `references/conventions.md`) — this section sets the tools and conventions those tasks build against.
+
+**Quality gate before saving**: `Test Strategy` is filled in with real framework/tool names and coverage expectations — not left as headers with no content. An epic without a test strategy cannot be decomposed into tasks.
 
 **After creation**: Confirm "✅ Epic created: `.claude/epics/<name>/epic.md`" and suggest: "Ready to decompose into tasks? Say: decompose the <name> epic"
 

@@ -16,10 +16,11 @@ This phase covers analyzing GitHub issues for parallel work streams and launchin
 
 Get issue details: `gh issue view <N> --json title,body,labels`
 
-Read the local task file fully. Identify independent work streams by asking:
+Read the local task file fully, including its Test Plan. Identify independent work streams by asking:
 - Which files will be created/modified?
 - Which changes can happen simultaneously without conflict?
 - What are the dependencies between changes?
+- Which Test Plan items belong to which stream? (Each stream must own the tests for the behavior it implements — TDD red → green happens inside the stream, not as a follow-up.)
 
 **Common stream patterns:**
 - Database Layer: schema, migrations, models
@@ -123,15 +124,19 @@ Task:
     Work to complete: <stream_description>
     
     Instructions:
-    1. Read full task from: .claude/epics/<epic>/<N>.md
+    1. Read full task from: .claude/epics/<epic>/<N>.md, including its Test Plan
     2. Read analysis from: .claude/epics/<epic>/<N>-analysis.md
-    3. Work ONLY in your assigned files
-    4. Commit frequently: "Issue #<N>: <specific change>"
-    5. Update progress in: .claude/epics/<epic>/updates/<N>/stream-<X>.md
-    6. If you need to touch files outside your scope, note it in your progress file and wait
-    7. Never use --force on git operations
+    3. Follow strict TDD for every Test Plan item in your scope:
+       a. RED — write the test first, run it, confirm it fails for the expected reason
+       b. GREEN — write the minimum implementation to make it pass, run it, confirm it passes without breaking other tests
+       Never write implementation code for a behavior before its failing test exists.
+    4. Work ONLY in your assigned files
+    5. Commit frequently, and separately for each step: "Issue #<N>: red - <test description>" then "Issue #<N>: green - <implementation description>"
+    6. Update progress in: .claude/epics/<epic>/updates/<N>/stream-<X>.md, noting which Test Plan items are red vs green
+    7. If you need to touch files outside your scope, note it in your progress file and wait
+    8. Never use --force on git operations
     
-    Complete your stream's work and mark status: completed when done.
+    Complete your stream's work and mark status: completed when done — all Test Plan items must be green.
 ```
 
 Streams with unmet dependencies are queued — launch them as their dependencies complete.

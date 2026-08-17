@@ -80,6 +80,28 @@ completion: 0%
 
 ---
 
+## TDD Rule (Red → Green)
+
+Every implementation task in CCPM follows strict test-driven development. This is not optional and is not delegated to a separate "testing" task — it is how each unit of implementation work gets built.
+
+1. **Red** — before writing any implementation code, write a test that encodes one acceptance criterion and confirm it fails (and fails for the expected reason, not a typo/setup error).
+2. **Green** — write the minimum implementation code needed to make that test pass. Run the full relevant test suite and confirm it passes with no other tests broken.
+3. **Refactor** — once green, clean up implementation and test code while keeping the suite passing.
+
+Repeat per acceptance criterion / test case until the task's Test Plan is fully covered.
+
+**Where this shows up:**
+- **Epics** define a `Test Strategy` (frameworks, test types, coverage expectations) before decomposition — see `plan.md`.
+- **Tasks** define a `Test Plan` (concrete test cases derived from acceptance criteria) at creation time, before `Technical Details` — see `structure.md`.
+- **Execution** requires agents to show the red step (failing test) before the green step (passing implementation) for each change — see `execute.md`.
+
+**Hard rules:**
+- Never write implementation code for a behavior that doesn't yet have a failing test.
+- Never check "Tests written and passing" on a task without having run them red first.
+- A task with no Test Plan is not ready to build — go back and write one.
+
+---
+
 ## Datetime Rule
 
 Always get real current datetime from the system — never use placeholder text:
