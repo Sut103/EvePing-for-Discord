@@ -1,31 +1,31 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、このリポジトリでコードを扱う際に Claude Code (claude.ai/code) へガイダンスを提供するものです。
 
-## Language
+## 言語
 
-Always respond to the user in Japanese (日本語). This applies to all chat output — explanations, summaries, and questions — regardless of the language the user writes in. Code, identifiers, commit messages, and file contents are unaffected by this rule and should follow normal engineering conventions.
+ユーザーへの応答は常に日本語で行うこと。これはチャット出力（説明、要約、質問など）すべてに適用され、ユーザーがどの言語で書いたかにかかわらず日本語で応答する。コード、識別子、コミットメッセージ、ファイルの内容についてはこのルールの対象外であり、通常のエンジニアリング規約に従うこと。
 
-## Project state
+## プロジェクトの現状
 
-This repository is currently a greenfield project — it contains no application source code yet, only a LICENSE (MIT) and project-management tooling. There is no README, package manifest, build system, linter, or test suite to reference. Do not assume any particular language, framework, or directory layout until one has actually been established in the repo; check what exists before writing commands or code.
+このリポジトリは現在、白紙状態のプロジェクトである — LICENSE（MIT）とプロジェクト管理用ツールのみが存在し、アプリケーションのソースコードはまだ存在しない。README、パッケージマニフェスト、ビルドシステム、リンター、テストスイートなど参照できるものはない。実際にリポジトリ内で確立されるまでは、特定の言語・フレームワーク・ディレクトリ構成を前提としないこと。コマンドやコードを書く前に、実際に何が存在するかを確認すること。
 
-The project name ("EvePing for Discord") implies a Discord bot/integration related to EVE Online, but no implementation has been started.
+プロジェクト名（「EvePing for Discord」）から EVE Online に関連する Discord ボット／連携機能であることがうかがえるが、実装はまだ開始されていない。
 
-## Project management workflow (ccpm)
+## プロジェクト管理ワークフロー（ccpm）
 
-This repo has the `ccpm` skill installed (`.claude/skills/ccpm/`), a spec-driven delivery workflow: **PRD → Epic → GitHub Issues → parallel agents → shipped code**. Use it for anything in the software delivery lifecycle — writing/planning features, decomposing epics into tasks, syncing work to GitHub issues, starting work on an issue, checking status/standup, or closing out issues/epics.
+このリポジトリには `ccpm` スキルがインストールされている（`.claude/skills/ccpm/`）。これは PRD → エピック → GitHub Issues → 並列エージェント → 実装完了 という仕様駆動の開発ワークフローである。機能の企画・立案、エピックのタスクへの分解、GitHub Issues への同期、Issue への着手、ステータス・スタンドアップの確認、Issue／エピックのクローズなど、ソフトウェア開発ライフサイクルに関わる作業全般で使用する。
 
-Key points from `.claude/skills/ccpm/SKILL.md` and `references/conventions.md`:
+`.claude/skills/ccpm/SKILL.md` および `references/conventions.md` からの要点:
 
-- **Requirements live in files, not heads.** Every feature starts as a PRD, becomes a technical epic, decomposes into GitHub issues, and is executed by parallel agents with full traceability.
-- **TDD is enforced across the whole lifecycle** (red → green), not treated as a separate phase:
-  - Plan: every epic defines a concrete Test Strategy before decomposition.
-  - Structure: every task defines a Test Plan (one test case per acceptance criterion) before Technical Details.
-  - Execute: every agent writes the failing test before the passing implementation, for each Test Plan item — never the reverse.
-- **Script-first rule**: for deterministic, read-only status queries, run the provided bash scripts in `.claude/skills/ccpm/references/scripts/` instead of reasoning it out manually — e.g. `status.sh`, `standup.sh`, `epic-list.sh`, `epic-show.sh <name>`, `epic-status.sh <name>`, `prd-list.sh`, `prd-status.sh`, `search.sh <query>`, `in-progress.sh`, `next.sh`, `blocked.sh`, `validate.sh`. Reserve LLM reasoning for work that actually needs it: writing PRDs, analyzing parallelism, launching agents, synthesizing updates.
-- The five phases (Plan, Structure, Sync, Execute, Track) each have a dedicated reference doc under `.claude/skills/ccpm/references/` — read the relevant one before acting in that phase.
+- **要件は頭の中ではなくファイルに置く。** すべての機能は PRD として始まり、技術的なエピックとなり、GitHub Issues に分解され、完全なトレーサビリティを保ちながら並列エージェントによって実行される。
+- **TDD はライフサイクル全体で強制される**（red → green）。これは独立したフェーズではなく、各工程に組み込まれている:
+  - Plan: 各エピックは、タスク分解前に具体的なテスト戦略（Test Strategy）を定義する。
+  - Structure: 各タスクは、技術詳細（Technical Details）の前に、受け入れ基準ごとに1つのテストケースを持つテスト計画（Test Plan）を定義する。
+  - Execute: 各エージェントは、テスト計画の各項目について、失敗するテスト（red）を書いてから実装（green）を行う — 逆の順序は許されない。
+- **スクリプト優先の原則**: 推論を必要としない決定的な読み取り専用のステータス確認については、手動で調べるのではなく `.claude/skills/ccpm/references/scripts/` にある bash スクリプトを実行すること（例: `status.sh`、`standup.sh`、`epic-list.sh`、`epic-show.sh <name>`、`epic-status.sh <name>`、`prd-list.sh`、`prd-status.sh`、`search.sh <query>`、`in-progress.sh`、`next.sh`、`blocked.sh`、`validate.sh`）。LLM による推論は、PRD の作成、並列性の分析、エージェントの起動、更新内容の統合など、本当に必要な作業のために温存すること。
+- 5つのフェーズ（Plan、Structure、Sync、Execute、Track）にはそれぞれ `.claude/skills/ccpm/references/` 配下に専用のリファレンスドキュメントがある — 各フェーズで作業する前に該当するドキュメントを読むこと。
 
-## Once application code exists
+## アプリケーションコードが追加されたら
 
-When source files, a package manifest, or a test suite are added to this repo, update this CLAUDE.md with the actual build/lint/test commands and a description of the real architecture — do not leave this section aspirational.
+このリポジトリにソースファイル、パッケージマニフェスト、テストスイートが追加された時点で、実際のビルド／リント／テストコマンドと実際のアーキテクチャの説明でこの CLAUDE.md を更新すること — このセクションを願望のまま放置しないこと。
