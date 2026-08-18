@@ -27,7 +27,7 @@ export EVEPING_DISCORD_TOKEN="xxxxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxx"
 
 ### 3. ビルド・起動
 
-Go 1.21以降が必要。
+Go 1.24以降が必要（`go.mod` の `go 1.24.7` 指定に合わせる）。
 
 ```bash
 go build ./cmd/eveping
