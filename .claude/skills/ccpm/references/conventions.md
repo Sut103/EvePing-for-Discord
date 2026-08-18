@@ -104,7 +104,7 @@ Repeat per acceptance criterion / test case until the task's Test Plan is fully 
 
 ## Code Review Rule (per-task `/code-review`)
 
-Every task's implementation is verified with the `/code-review` skill right after the agent finishes it, before the stream is marked completed. This is not optional and is not deferred to a separate review pass at epic close.
+Every task's implementation is verified with the `/code-review` skill right after the agent finishes it, before the stream is marked completed. This per-stream review is not optional, and it does not substitute for the epic-close multi-agent review below — both run, at different points in the lifecycle.
 
 1. Once all Test Plan items are green, run `/code-review` against the stream's diff.
 2. **Critical findings** (broken build, a Test Plan item that doesn't actually pass, security vulnerability, data loss) — fix immediately, re-run the relevant tests, and re-review before proceeding. Do not mark the stream completed with an open critical finding.
@@ -112,6 +112,21 @@ Every task's implementation is verified with the `/code-review` skill right afte
 
 **Where this shows up:**
 - **Execution** — each agent runs `/code-review` immediately after its Test Plan goes green and before marking status: completed — see `execute.md`.
+
+---
+
+## Epic Close Review Rule (multi-agent `/code-review`)
+
+Once every task in an epic is closed and before the epic is merged (`Merging an Epic` in `sync.md`), the full epic diff gets one more pass — a multi-agent code review, not just a rerun of the per-stream reviews above. This is not optional and is not skipped even if every per-stream review already passed clean.
+
+1. Launch multiple agents in parallel, each independently running the `/code-review` skill against the full epic diff (the epic worktree/branch diff vs. `main`), not just a single task's slice of it.
+2. Consolidate the agents' findings into one report — dedupe overlapping items, and keep the higher severity when reports disagree — split into critical and non-critical findings.
+3. **Report the consolidated results to the user** before proceeding to merge.
+4. **Critical findings** — fix immediately, re-run affected tests, and re-review before merging. Do not merge an epic with an open critical finding.
+5. **Non-critical findings** — record them (e.g. in the epic's progress file) for later triage; they do not block the merge.
+
+**Where this shows up:**
+- **Sync** — runs before the merge steps in "Merging an Epic," with the consolidated results reported to the user — see `sync.md`.
 
 ---
 
