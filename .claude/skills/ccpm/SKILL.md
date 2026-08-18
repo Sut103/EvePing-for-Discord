@@ -26,6 +26,8 @@ See `references/conventions.md` for the full rule.
 
 Execute also enforces a Code Review Rule: once a stream's Test Plan is green, the agent runs `/code-review` on its diff before marking the stream completed. Critical findings are fixed immediately; non-critical findings are recorded for later triage. See `references/conventions.md`.
 
+At epic close, before merging, a further Epic Close Review Rule applies: multiple agents run `/code-review` in parallel against the full epic diff, and the consolidated critical/non-critical findings are reported to the user before the merge proceeds. See `references/conventions.md`.
+
 ## The Five Phases
 
 ### 1. Plan — Capture requirements
@@ -41,7 +43,7 @@ Execute also enforces a Code Review Rule: once a stream's Test Plan is green, th
 ### 3. Sync — Push to GitHub
 **When**: Local epic/tasks need to become GitHub issues, progress needs to be posted as comments, or a bug is found and needs a linked issue created.
 **Read**: `references/sync.md`
-**Covers**: Epic sync (epic + tasks → GitHub issues), issue sync (progress comments), closing issues/epics, bug reporting against completed issues.
+**Covers**: Epic sync (epic + tasks → GitHub issues), issue sync (progress comments), closing issues/epics, the multi-agent `/code-review` pass before merging an epic, bug reporting against completed issues.
 
 ### 4. Execute — Start building
 **When**: User wants to start working on one or more GitHub issues with parallel agents.
