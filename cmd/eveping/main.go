@@ -82,9 +82,9 @@ func main() {
 		runDailyBatch(client, logger)
 	})
 
-	sigCh := make(chan os.Signal, 1)
+	sigCh := make(chan os.Signal, 2)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-	go waitAndStop(sched, sigCh, logger)
+	go waitAndStop(sched, sigCh, logger, func() { os.Exit(1) })
 
 	sched.Start()
 }
