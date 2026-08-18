@@ -33,6 +33,7 @@ EvePingをコンテナイメージとして起動できるようにする。既�
 - `.dockerignore` を追加
 - 開発用 `docker-compose.yml` を追加（`.env` からのトークン注入をサポート）
 - `README.md` にDockerでのビルド・起動手順を追記
+- 既存の `.github/workflows/ci.yml` に `docker build .` を実行するジョブ（またはステップ）を追加し、Dockerfileのビルド失敗をPull Request時点で検知する。イメージのレジストリへのpush・公開は行わない（Out of Scope）。
 
 ## Test Strategy
 
@@ -49,6 +50,7 @@ EvePingをコンテナイメージとして起動できるようにする。既�
   - `docker run -e EVEPING_DISCORD_TOKEN=<有効なトークン> <image>` が `go run ./cmd/eveping` と同等に動作し、Discordへ接続してスケジューラが起動すること（既存READMEの手動検証手順に準拠）
   - `EVEPING_DISCORD_TOKEN` を指定せずに起動した場合、`main.go` の既存仕様どおり即座にエラー終了すること
   - `docker compose up`（または `docker compose config`）でCompose定義が問題なく解釈され、`.env` からトークンが注入されること
+- **CI（GitHub Actions、自動）**: `.github/workflows/ci.yml` に `docker build .`（タグ付け・レジストリへのpushはしない）を実行するステップ/ジョブを追加する。既存の `test` ジョブと同様、push/pull_request両方のトリガーで実行し、ビルド失敗時はCIを赤くする。GitHub ActionsのUbuntuランナーにはDockerデーモンが標準で利用可能なため、この観点はこのサンドボックス環境の制約（daemon不在）を受けず自動化できる。
 
 ### Coverage Expectations
 - PRDの各Functional Requirementは、上記の自動静的テストまたは手動検証手順のいずれかで必ずカバーする。
@@ -60,18 +62,19 @@ EvePingをコンテナイメージとして起動できるようにする。既�
 
 ## Implementation Strategy
 
-タスク数が少なく依存関係も単純なため、逐次作成する（Small epic, <5 tasks）。Dockerfile本体の確定が他タスクの前提になるため、まずDockerfile/.dockerignoreを完成させ、その後docker-compose.ymlとREADME追記を進める。docker-compose.ymlとREADME追記は互いに独立しており並行可能。
+タスク数が少なく依存関係も単純なため、逐次作成する（Small epic, <5 tasks）。Dockerfile本体の確定が他タスクの前提になるため、まずDockerfile/.dockerignoreを完成させ、その後docker-compose.yml・README追記・CIジョブ追加を進める。docker-compose.yml・README追記・CIジョブ追加はDockerfile確定後は互いに独立しており並行可能（ただしCIジョブはDockerfileが実際にビルドできる状態でないと検証できないため、実質的にはTask 1の後で着手する）。
 
 ## Task Breakdown Preview
 
 - [ ] Task 1: マルチステージ `Dockerfile` + `.dockerignore` の追加（静的アサーションテスト含む）
 - [ ] Task 2: 開発用 `docker-compose.yml` の追加（`.env` からのトークン注入、静的アサーションテスト含む）
 - [ ] Task 3: README へのDockerビルド・起動手順の追記
+- [ ] Task 4: CI（`.github/workflows/ci.yml`）への `docker build` 検証ステップ追加
 
 ## Dependencies
 
-- Task 2・Task 3 は Task 1（Dockerfileの存在・仕様確定）に依存する。
-- 外部依存: Dockerデーモンでのビルド・起動確認（手動検証）にはDocker環境が必要。
+- Task 2・Task 3・Task 4 は Task 1（Dockerfileの存在・仕様確定）に依存する。
+- 外部依存: Dockerデーモンでのビルド・起動確認（手動検証）にはDocker環境が必要。Task 4のCI検証自体はGitHub Actionsランナー上のDockerデーモンで完結する。
 
 ## Success Criteria (Technical)
 
@@ -79,8 +82,9 @@ EvePingをコンテナイメージとして起動できるようにする。既�
 - `go build ./...` / `go vet ./...` / `go test ./...` が全て成功する。
 - （Docker環境がある場合の手動検証）`docker build .` が成功し、`docker run -e EVEPING_DISCORD_TOKEN=...` で `go run ./cmd/eveping` と同等にBotが起動する。
 - README の記述に従うだけでDocker起動ができる。
+- CI上で `docker build .` が実行され、Pull Request時点でDockerfileのビルド失敗を検知できる。
 
 ## Estimated Effort
 
 - Size: S
-- Hours: 4-6
+- Hours: 5-7

@@ -42,6 +42,7 @@ EvePing（Go + discordgo製の常駐Bot）は現状、ビルド済みバイナ�
 4. `docker run -e EVEPING_DISCORD_TOKEN=... <image>` でBotプロセスが起動し、既存の `go run ./cmd/eveping` と同等に動作すること。
 5. 開発用の `docker-compose.yml` を追加し、環境変数（`.env` 経由等）でトークンを注入して起動できるようにする。
 6. README にDockerでのビルド・起動手順を追記する。
+7. 既存のCI（`.github/workflows/ci.yml`）に、`docker build` によるイメージビルド検証ジョブを追加する。Pull Request・push時にDockerfileの構文崩れやビルド失敗を検知できるようにする（レジストリへのpush・公開は行わない）。
 
 ## Non-Functional Requirements
 
@@ -55,6 +56,7 @@ EvePing（Go + discordgo製の常駐Bot）は現状、ビルド済みバイナ�
 - ビルドしたイメージを `EVEPING_DISCORD_TOKEN` を指定して起動すると、Botとして正常に稼働する（Discordへの接続・スケジューラ起動ログが確認できる）ことを手動検証で確認する。
 - `docker-compose.yml` を使ったローカル起動が可能。
 - README の記述に従うだけで、初見のユーザーがDockerでBotを起動できる。
+- CI上で `docker build` が実行され、Dockerfileのビルド失敗がPull Requestの時点で検知できる。
 
 ## Constraints & Assumptions
 
@@ -65,8 +67,7 @@ EvePing（Go + discordgo製の常駐Bot）は現状、ビルド済みバイナ�
 
 ## Out of Scope
 
-- CI/CD（GitHub Actions等でのイメージ自動ビルド・レジストリへのpush）
-- コンテナレジストリへの公開・配布
+- コンテナレジストリへのイメージの自動push・公開（CI上での `docker build` によるビルド検証自体は本PRDのスコープに含む。上記Functional Requirements参照）
 - Kubernetes等のオーケストレーション用マニフェスト
 - マルチアーキテクチャ（arm64等）ビルド対応
 - 二重送信対策やDBなど、Docker化と無関係な既存スコープ外事項（Epic #4で既に対応外と合意済み）
