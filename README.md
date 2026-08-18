@@ -8,7 +8,7 @@ DiscordのScheduled Eventの前日に、「興味あり」を押したユーザ�
 
 1. [Discord Developer Portal](https://discord.com/developers/applications) で新しいアプリケーションを作成する。
 2. 左メニューの「Bot」からBotユーザーを追加し、**Bot Token** を発行する（この値は後述の環境変数に設定する）。
-3. 同じ「Bot」ページの **Privileged Gateway Intents** で `GUILD_SCHEDULED_EVENTS` を含む必要なIntentを有効化する。
+3. `GUILD_SCHEDULED_EVENTS` インテントは非特権（non-privileged）インテントであり、Developer Portalの **Privileged Gateway Intents** パネルには対応するトグルは存在しない。Botコード側（discordgoの `discordgo.New()` の既定値）で自動的にリクエストされるため、Portal側での追加設定は不要。Portalの **Privileged Gateway Intents** で有効化が必要なのは、Presence／Server Members／Message Contentなど特権インテントを使う場合のみ（本Botでは使用しない）。
 4. 「OAuth2 > URL Generator」で `bot` スコープを選び、以下の権限を付与した招待URLを発行して開発用サーバーにBotを招待する。
    - Scheduled Eventsの閲覧（View Channels 等、Scheduled Events APIの利用に必要な基本権限）
    - ユーザーへのDM送信（BotとDMチャンネルを開けること。Bot自体には特別な権限設定は不要だが、対象ユーザー側でBotからのDMがブロックされていないこと）
