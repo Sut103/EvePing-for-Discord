@@ -38,6 +38,7 @@ Epic「eve-ping」（GitHub Issue #4、`epic:eve-ping` ラベル）に基づき�
   - Plan: 各エピックは、タスク分解前に具体的なテスト戦略（Test Strategy）を定義する。
   - Structure: 各タスクは、技術詳細（Technical Details）の前に、受け入れ基準ごとに1つのテストケースを持つテスト計画（Test Plan）を定義する。
   - Execute: 各エージェントは、テスト計画の各項目について、失敗するテスト（red）を書いてから実装（green）を行う — 逆の順序は許されない。
+  - **適用範囲はアプリケーションコード（Go実装。`cmd/`・`internal/` 配下など）の変更に限る。** PRD／エピック／タスクファイルの作成・更新、CLAUDE.md・READMEなどのドキュメント、CI/ビルド設定の変更のように、アプリケーションコードを伴わない変更にはこのTDD（red→green）の強制は適用しない。この方針はこのプロジェクト固有の指示であり、`.claude/skills/ccpm/` 配下のCCPMスキル自体（汎用テンプレート）は変更しないこと。
 - **スクリプト優先の原則**: 推論を必要としない決定的な読み取り専用のステータス確認については、手動で調べるのではなく `.claude/skills/ccpm/references/scripts/` にある bash スクリプトを実行すること（例: `status.sh`、`standup.sh`、`epic-list.sh`、`epic-show.sh <name>`、`epic-status.sh <name>`、`prd-list.sh`、`prd-status.sh`、`search.sh <query>`、`in-progress.sh`、`next.sh`、`blocked.sh`、`validate.sh`）。LLM による推論は、PRD の作成、並列性の分析、エージェントの起動、更新内容の統合など、本当に必要な作業のために温存すること。
 - 5つのフェーズ（Plan、Structure、Sync、Execute、Track）にはそれぞれ `.claude/skills/ccpm/references/` 配下に専用のリファレンスドキュメントがある — 各フェーズで作業する前に該当するドキュメントを読むこと。
 

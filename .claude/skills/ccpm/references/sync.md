@@ -188,6 +188,10 @@ gh issue edit <epic_N> --body-file /tmp/epic-body.md
 - Check for uncommitted changes in the worktree — block if dirty.
 - Warn if any task issues are still open.
 
+### Multi-Agent Code Review
+
+Before merging, run the Epic Close Review Rule from `conventions.md`: launch multiple agents in parallel, each running `/code-review` against the full epic diff (`../epic-<name>` vs `main`). Consolidate their findings into one critical/non-critical report and present it to the user. Fix and re-review any critical findings — do not proceed to the merge steps below until none remain.
+
 ### Process
 
 ```bash
