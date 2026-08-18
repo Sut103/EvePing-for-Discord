@@ -6,16 +6,25 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      # eve-ping epic (#4) is not merged into main yet, so go.mod doesn't
-      # exist here until that lands. Skip the Go steps instead of failing
-      # CI on every push until the epic branch is merged.
+      # eve-ping epic (#4 / PR #14) is not merged into main yet, so go.mod
+      # doesn't exist here until that lands. Skip the Go steps instead of
+      # failing CI on every push until the epic branch is merged.
+      # Tracked for removal once #14 merges: see issue #16.
       - name: Check for go.mod
         id: gomod
         run: |
@@ -28,17 +37,17 @@ jobs:
 
       - name: Set up Go
         if: steps.gomod.outputs.present == 'true'
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         with:
           go-version-file: go.mod
           cache: true
 
       - name: go vet
-        if: steps.gomod.outputs.present == 'true'
+        if: always() && steps.gomod.outputs.present == 'true'
         run: go vet ./...
 
       - name: gofmt
-        if: steps.gomod.outputs.present == 'true'
+        if: always() && steps.gomod.outputs.present == 'true'
         run: |
           fmt_out="$(gofmt -l .)"
           if [ -n "$fmt_out" ]; then
@@ -48,9 +57,9 @@ jobs:
           fi
 
       - name: go build
-        if: steps.gomod.outputs.present == 'true'
+        if: always() && steps.gomod.outputs.present == 'true'
         run: go build ./...
 
       - name: go test
-        if: steps.gomod.outputs.present == 'true'
+        if: always() && steps.gomod.outputs.present == 'true'
         run: go test ./... -race
