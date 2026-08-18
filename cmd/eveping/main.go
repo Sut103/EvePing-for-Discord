@@ -8,6 +8,8 @@ import (
 	"errors"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -74,5 +76,10 @@ func main() {
 	sched := scheduler.New(batchInterval, func() {
 		runDailyBatch(client, logger)
 	})
+
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	go waitAndStop(sched, sigCh, logger)
+
 	sched.Start()
 }
