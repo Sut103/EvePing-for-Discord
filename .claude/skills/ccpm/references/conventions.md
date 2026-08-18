@@ -102,6 +102,19 @@ Repeat per acceptance criterion / test case until the task's Test Plan is fully 
 
 ---
 
+## Code Review Rule (per-task `/code-review`)
+
+Every task's implementation is verified with the `/code-review` skill right after the agent finishes it, before the stream is marked completed. This is not optional and is not deferred to a separate review pass at epic close.
+
+1. Once all Test Plan items are green, run `/code-review` against the stream's diff.
+2. **Critical findings** (broken build, a Test Plan item that doesn't actually pass, security vulnerability, data loss) — fix immediately, re-run the relevant tests, and re-review before proceeding. Do not mark the stream completed with an open critical finding.
+3. **Non-critical findings** (style, minor simplification, low-confidence suggestions) — record them in the stream's progress file for later triage; they do not block marking the stream completed.
+
+**Where this shows up:**
+- **Execution** — each agent runs `/code-review` immediately after its Test Plan goes green and before marking status: completed — see `execute.md`.
+
+---
+
 ## Datetime Rule
 
 Always get real current datetime from the system — never use placeholder text:
@@ -164,6 +177,7 @@ grep 'github:' <file> | grep -oE '[0-9]+$'
   ```
 - Commit format inside epics: `Issue #<N>: <description>`
 - Never use `--force` in any git operation
+- **Verified working in Claude Code on the Web**: `git worktree add`/`remove`, and committing inside the resulting worktree directory, function normally in a Claude Code on the Web (remote/cloud) session — confirmed by creating, writing/committing in, and removing a worktree in that environment. Do not assume worktrees are unavailable there; use the epic worktree flow as-is regardless of whether the session is local or web/remote.
 
 ---
 

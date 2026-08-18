@@ -24,6 +24,8 @@ CCPM enforces strict TDD across the whole lifecycle — this is not a separate p
 
 See `references/conventions.md` for the full rule.
 
+Execute also enforces a Code Review Rule: once a stream's Test Plan is green, the agent runs `/code-review` on its diff before marking the stream completed. Critical findings are fixed immediately; non-critical findings are recorded for later triage. See `references/conventions.md`.
+
 ## The Five Phases
 
 ### 1. Plan — Capture requirements
@@ -44,7 +46,7 @@ See `references/conventions.md` for the full rule.
 ### 4. Execute — Start building
 **When**: User wants to start working on one or more GitHub issues with parallel agents.
 **Read**: `references/execute.md`
-**Covers**: Issue analysis (parallel work stream identification), launching parallel agents, coordinating worktrees.
+**Covers**: Issue analysis (parallel work stream identification), launching parallel agents, coordinating worktrees, running `/code-review` on each stream before it's marked completed.
 
 ### 5. Track — Know where things stand
 **When**: User asks for status, standup report, what's blocked, what's next, or needs to validate state.
