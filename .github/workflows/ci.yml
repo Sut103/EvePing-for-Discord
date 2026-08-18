@@ -36,18 +36,25 @@ jobs:
           fi
 
       - name: Set up Go
+        id: setup-go
         if: steps.gomod.outputs.present == 'true'
         uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         with:
           go-version-file: go.mod
           cache: true
 
+      # Each check below runs regardless of whether an earlier check in this
+      # group failed (so one failure doesn't hide the others), but still
+      # requires Set up Go to have actually succeeded — steps.setup-go.outcome
+      # != 'failure' short-circuits all four if Go itself failed to install,
+      # instead of masking that failure behind four unrelated "command not
+      # found" errors.
       - name: go vet
-        if: always() && steps.gomod.outputs.present == 'true'
+        if: steps.gomod.outputs.present == 'true' && steps.setup-go.outcome != 'failure' && !cancelled()
         run: go vet ./...
 
       - name: gofmt
-        if: always() && steps.gomod.outputs.present == 'true'
+        if: steps.gomod.outputs.present == 'true' && steps.setup-go.outcome != 'failure' && !cancelled()
         run: |
           fmt_out="$(gofmt -l .)"
           if [ -n "$fmt_out" ]; then
@@ -57,9 +64,9 @@ jobs:
           fi
 
       - name: go build
-        if: always() && steps.gomod.outputs.present == 'true'
+        if: steps.gomod.outputs.present == 'true' && steps.setup-go.outcome != 'failure' && !cancelled()
         run: go build ./...
 
       - name: go test
-        if: always() && steps.gomod.outputs.present == 'true'
+        if: steps.gomod.outputs.present == 'true' && steps.setup-go.outcome != 'failure' && !cancelled()
         run: go test ./... -race
