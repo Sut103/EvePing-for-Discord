@@ -108,4 +108,5 @@ Estimated total effort: 5.5 hours
 - #23・#24・#25のcode-reviewでは指摘なし。
 
 静的アサーションテスト(`dockerbuild/`パッケージ)11件が全てgreen。`go build ./...` / `go vet ./...` / `go test ./...` も全て成功。
-実際の `docker build .` / `docker run` / `docker compose up` によるDockerデーモンでの起動確認は、この実行環境にDockerデーモンが無いため未実施(各タスクのDefinition of Doneに手動検証項目として残置)。`docker compose config` の静的パースのみこの環境で確認済み。
+
+**訂正**: 当初「この実行環境にDockerデーモンが無い」と記載していたが誤りだった。`dockerd` バイナリは実装セッションの環境に存在し、手動起動できることを確認した。ただし起動したdockerdで実際に `docker build .` を試みたところ、サンドボックス固有のネットワーク制約(アウトバウンドHTTPSを透過的にインターセプトするプロキシがビルドコンテナ内から信頼されずAlpineの `apk add ca-certificates` がTLS検証エラーになる、およびDocker Hub匿名pullのレート制限)によりローカルでは成功しなかった。一方、GitHub Actions CI(サンドボックス外の通常のネットワーク環境)では `docker build .` ステップが実際に成功している([確認済みの実行](https://github.com/Sut103/EvePing-for-Discord/actions/runs/32193894776/job/95893861685)、20秒で完了) — これがDockerfile自体の正当性を示す実際の検証結果である。`docker run` によるDiscordへの実接続確認(実トークンが必要)と `docker compose up` の実起動確認は未実施のまま。`docker compose config` の静的パースはこの環境で確認済み。
