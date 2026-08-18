@@ -42,6 +42,26 @@ go run ./cmd/eveping
 
 起動すると、Botセッションを開いたのち内部スケジューラが24時間ごとに日次バッチ（`RunDailyBatch`）を実行する常駐プロセスとなる。標準出力にバッチの開始・終了・対象イベント数・DM送信の成功／失敗件数がログとして出力される。
 
+## Dockerでの起動
+
+Goツールチェインを用意せずに、コンテナイメージとしてビルド・起動することもできる。イメージには`EVEPING_DISCORD_TOKEN`を焼き込まないため、起動時に環境変数として渡す。
+
+### イメージのビルドと起動
+
+```bash
+docker build -t eveping .
+docker run -e EVEPING_DISCORD_TOKEN="xxxxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxx" eveping
+```
+
+### docker composeでの起動
+
+`docker-compose.yml` を使う場合、`EVEPING_DISCORD_TOKEN` を `.env` ファイル（コミットしないこと）等で用意した上で起動する。
+
+```bash
+echo 'EVEPING_DISCORD_TOKEN=xxxxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxx' > .env
+docker compose up
+```
+
 ## 開発用Discordサーバーでの手動検証手順
 
 自動テストはDiscord APIとの実通信を含まないため、実際にDMが届くことは以下の手順で目視確認する。
