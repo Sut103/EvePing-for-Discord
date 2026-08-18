@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"log"
 	"strings"
 	"testing"
@@ -49,6 +50,29 @@ func TestLogBatchResult_IncludesCounts(t *testing.T) {
 	for _, want := range []string{"target_events=3", "sent_success=5", "sent_failure=2"} {
 		if !strings.Contains(out, want) {
 			t.Fatalf("log output %q does not contain %q", out, want)
+		}
+	}
+}
+
+func TestLogBatchResult_IncludesErrorDetails(t *testing.T) {
+	var buf bytes.Buffer
+	logger := log.New(&buf, "", 0)
+	result := batch.BatchResult{
+		Errors: []error{
+			errors.New("fetch scheduled events for guild g1: api down"),
+			errors.New("send reminder DM to user u1: 50007"),
+		},
+	}
+
+	logBatchResult(logger, time.Now(), result)
+
+	out := buf.String()
+	for _, want := range []string{
+		"fetch scheduled events for guild g1: api down",
+		"send reminder DM to user u1: 50007",
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("log output %q does not contain error detail %q", out, want)
 		}
 	}
 }

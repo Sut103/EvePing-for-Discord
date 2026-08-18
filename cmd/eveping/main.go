@@ -43,6 +43,9 @@ func logBatchResult(logger *log.Logger, start time.Time, result batch.BatchResul
 		result.SentFailure,
 		len(result.Errors),
 	)
+	for _, err := range result.Errors {
+		logger.Printf("daily batch error: %v", err)
+	}
 }
 
 func runDailyBatch(client discordclient.Client, logger *log.Logger) {
@@ -60,11 +63,13 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	// discordgo.New sets Identify.Intents to IntentsAllWithoutPrivileged by
+	// default, which already includes IntentGuildScheduledEvents — no
+	// explicit intent configuration is needed here.
 	session, err := discordgo.New("Bot " + token)
 	if err != nil {
 		logger.Fatalf("create discord session: %v", err)
 	}
-	session.Identify.Intents |= discordgo.IntentsGuildScheduledEvents
 
 	if err := session.Open(); err != nil {
 		logger.Fatalf("open discord session: %v", err)
