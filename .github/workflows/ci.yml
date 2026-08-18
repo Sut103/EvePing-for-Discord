@@ -55,3 +55,7 @@ jobs:
       - name: go test
         if: steps.setup-go.outcome != 'failure' && !cancelled()
         run: go test ./... -race
+
+      - name: docker build
+        if: ${{ !cancelled() }}
+        run: docker build .
