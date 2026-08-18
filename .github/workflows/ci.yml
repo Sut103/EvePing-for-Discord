@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # eve-ping epic (#4) is not merged into main yet, so go.mod doesn't
+      # exist here until that lands. Skip the Go steps instead of failing
+      # CI on every push until the epic branch is merged.
+      - name: Check for go.mod
+        id: gomod
+        run: |
+          if [ -f go.mod ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::go.mod not found; skipping Go checks"
+          fi
+
+      - name: Set up Go
+        if: steps.gomod.outputs.present == 'true'
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: go vet
+        if: steps.gomod.outputs.present == 'true'
+        run: go vet ./...
+
+      - name: gofmt
+        if: steps.gomod.outputs.present == 'true'
+        run: |
+          fmt_out="$(gofmt -l .)"
+          if [ -n "$fmt_out" ]; then
+            echo "The following files are not gofmt-formatted:"
+            echo "$fmt_out"
+            exit 1
+          fi
+
+      - name: go build
+        if: steps.gomod.outputs.present == 'true'
+        run: go build ./...
+
+      - name: go test
+        if: steps.gomod.outputs.present == 'true'
+        run: go test ./... -race
