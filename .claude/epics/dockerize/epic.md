@@ -1,9 +1,9 @@
 ---
 name: dockerize
-status: backlog
+status: completed
 created: 2026-08-18T15:35:12Z
-updated: 2026-08-18T15:58:00Z
-progress: 75%
+updated: 2026-08-18T16:43:37Z
+progress: 100%
 prd: .claude/prds/dockerize.md
 github: https://github.com/Sut103/EvePing-for-Discord/issues/20
 ---
@@ -94,9 +94,18 @@ EvePingをコンテナイメージとして起動できるようにする。既�
 - [x] #22 - マルチステージDockerfile + .dockerignore の追加 (parallel: true)
 - [x] #23 - 開発用docker-compose.ymlの追加 (parallel: true, depends_on: #22)
 - [x] #24 - READMEへのDockerビルド・起動手順の追記 (parallel: true, depends_on: #22, #23)
-- [ ] #25 - CIへのdocker buildビルド検証ステップ追加 (parallel: true, depends_on: #22)
+- [x] #25 - CIへのdocker buildビルド検証ステップ追加 (parallel: true, depends_on: #22)
 
 Total tasks: 4
 Parallel tasks: 4 (#22完了後、#23・#24・#25は並行着手可能)
 Sequential tasks: 0
 Estimated total effort: 5.5 hours
+
+## Execution Summary
+
+全4タスクをTDD(red→green)で実装し、各タスク完了時に code-review スキル(medium)を実施。
+- #22実装時にcode-reviewで検出: alpineランタイムに `ca-certificates` が無くDiscordへのTLS接続が失敗する重大な不具合を修正済み。あわせてCLAUDE.md/READMEのアーキテクチャ節を更新。
+- #23・#24・#25のcode-reviewでは指摘なし。
+
+静的アサーションテスト(`dockerbuild/`パッケージ)11件が全てgreen。`go build ./...` / `go vet ./...` / `go test ./...` も全て成功。
+実際の `docker build .` / `docker run` / `docker compose up` によるDockerデーモンでの起動確認は、この実行環境にDockerデーモンが無いため未実施(各タスクのDefinition of Doneに手動検証項目として残置)。`docker compose config` の静的パースのみこの環境で確認済み。
