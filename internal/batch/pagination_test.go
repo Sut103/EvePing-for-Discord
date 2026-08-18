@@ -2,6 +2,7 @@ package batch_test
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/Sut103/EvePing-for-Discord/internal/batch"
@@ -121,13 +122,5 @@ func makeUsers(startID, count int) []discordclient.User {
 }
 
 func idString(n int) string {
-	digits := []byte{}
-	if n == 0 {
-		return "0"
-	}
-	for n > 0 {
-		digits = append([]byte{byte('0' + n%10)}, digits...)
-		n /= 10
-	}
-	return "user-" + string(digits)
+	return fmt.Sprintf("user-%d", n)
 }
