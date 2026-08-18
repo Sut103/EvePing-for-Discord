@@ -3,7 +3,7 @@ name: dockerize
 status: backlog
 created: 2026-08-18T15:35:12Z
 updated: 2026-08-18T15:58:00Z
-progress: 0%
+progress: 25%
 prd: .claude/prds/dockerize.md
 github: https://github.com/Sut103/EvePing-for-Discord/issues/20
 ---
@@ -91,7 +91,7 @@ EvePingをコンテナイメージとして起動できるようにする。既�
 
 ## Tasks Created
 
-- [ ] #22 - マルチステージDockerfile + .dockerignore の追加 (parallel: true)
+- [x] #22 - マルチステージDockerfile + .dockerignore の追加 (parallel: true)
 - [ ] #23 - 開発用docker-compose.ymlの追加 (parallel: true, depends_on: #22)
 - [ ] #24 - READMEへのDockerビルド・起動手順の追記 (parallel: true, depends_on: #22, #23)
 - [ ] #25 - CIへのdocker buildビルド検証ステップ追加 (parallel: true, depends_on: #22)
