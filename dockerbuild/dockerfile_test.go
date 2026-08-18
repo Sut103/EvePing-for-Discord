@@ -51,6 +51,13 @@ func TestDockerfileRunsAsNonRoot(t *testing.T) {
 	}
 }
 
+func TestDockerfileInstallsCACertificates(t *testing.T) {
+	content := readRepoFile(t, "Dockerfile")
+	if !strings.Contains(content, "ca-certificates") {
+		t.Fatal("expected Dockerfile to install ca-certificates in the runtime stage, otherwise TLS calls to the Discord API fail")
+	}
+}
+
 func TestDockerignoreExcludesGitAndClaude(t *testing.T) {
 	content := readRepoFile(t, ".dockerignore")
 	for _, entry := range []string{".git", ".claude"} {

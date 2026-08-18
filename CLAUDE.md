@@ -58,6 +58,8 @@ go test ./...
 - `internal/batch` — バッチのコアロジック。`FilterTargetEvents`（翌日UTC判定+status絞り込みの純粋関数）、`FetchAllInterestedUsers`（ページネーション取得）、`SendReminderDM`（1件送信+エラーハンドリング）、`RunDailyBatch`（上記を組み合わせ全ギルド・全イベント・全ユーザーを走査し `BatchResult` を集計。個別失敗は分離し処理を継続する）。
 - `internal/reminder` — DM本文のフォーマット（`FormatReminder`: イベント名・UTC開始日時・イベントURLを含む）。
 - `internal/scheduler` — `time.Ticker` を使い、注入可能な周期でコールバックを呼び続ける常駐ループ（本番は24時間、テストはミリ秒単位を注入）。
+- `dockerbuild` — アプリケーションコードは含まない、Docker関連ファイル（`Dockerfile`/`.dockerignore`/`docker-compose.yml`/CIワークフロー）の内容をテキストとして検証する静的アサーションテスト専用パッケージ。Dockerデーモンなしで `go test ./...` の一部として実行できる。
+- `Dockerfile` / `.dockerignore` — マルチステージビルド（Go公式イメージでビルド → 軽量な実行イメージ）によるコンテナイメージ定義。Botトークンはイメージに埋め込まず、コンテナ起動時の環境変数（`EVEPING_DISCORD_TOKEN`）としてのみ注入する。
 
 DB・KVストアは使用しない完全ステートレス構成。全ての状態はバッチ実行のたびにDiscord APIから取得する。
 
