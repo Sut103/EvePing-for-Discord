@@ -2,10 +2,10 @@
 name: dockerize
 status: backlog
 created: 2026-08-18T15:35:12Z
-updated: 2026-08-18T15:35:12Z
+updated: 2026-08-18T15:58:00Z
 progress: 0%
 prd: .claude/prds/dockerize.md
-github: (will be set on sync)
+github: https://github.com/Sut103/EvePing-for-Discord/issues/20
 ---
 
 # Epic: dockerize
@@ -91,12 +91,12 @@ EvePingをコンテナイメージとして起動できるようにする。既�
 
 ## Tasks Created
 
-- [ ] 001.md - マルチステージDockerfile + .dockerignore の追加 (parallel: true)
-- [ ] 002.md - 開発用docker-compose.ymlの追加 (parallel: true)
-- [ ] 003.md - READMEへのDockerビルド・起動手順の追記 (parallel: true)
-- [ ] 004.md - CIへのdocker buildビルド検証ステップ追加 (parallel: true)
+- [ ] #22 - マルチステージDockerfile + .dockerignore の追加 (parallel: true)
+- [ ] #23 - 開発用docker-compose.ymlの追加 (parallel: true, depends_on: #22)
+- [ ] #24 - READMEへのDockerビルド・起動手順の追記 (parallel: true, depends_on: #22, #23)
+- [ ] #25 - CIへのdocker buildビルド検証ステップ追加 (parallel: true, depends_on: #22)
 
 Total tasks: 4
-Parallel tasks: 4 (すべてTask 1完了後に並行着手可能)
+Parallel tasks: 4 (#22完了後、#23・#24・#25は並行着手可能)
 Sequential tasks: 0
 Estimated total effort: 5.5 hours
