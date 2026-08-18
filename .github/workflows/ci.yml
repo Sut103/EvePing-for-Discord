@@ -21,23 +21,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      # eve-ping epic (#4 / PR #14) is not merged into main yet, so go.mod
-      # doesn't exist here until that lands. Skip the Go steps instead of
-      # failing CI on every push until the epic branch is merged.
-      # Tracked for removal once #14 merges: see issue #16.
-      - name: Check for go.mod
-        id: gomod
-        run: |
-          if [ -f go.mod ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::go.mod not found; skipping Go checks"
-          fi
-
       - name: Set up Go
         id: setup-go
-        if: steps.gomod.outputs.present == 'true'
         uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         with:
           go-version-file: go.mod
@@ -50,11 +35,11 @@ jobs:
       # instead of masking that failure behind four unrelated "command not
       # found" errors.
       - name: go vet
-        if: steps.gomod.outputs.present == 'true' && steps.setup-go.outcome != 'failure' && !cancelled()
+        if: steps.setup-go.outcome != 'failure' && !cancelled()
         run: go vet ./...
 
       - name: gofmt
-        if: steps.gomod.outputs.present == 'true' && steps.setup-go.outcome != 'failure' && !cancelled()
+        if: steps.setup-go.outcome != 'failure' && !cancelled()
         run: |
           fmt_out="$(gofmt -l .)"
           if [ -n "$fmt_out" ]; then
@@ -64,9 +49,9 @@ jobs:
           fi
 
       - name: go build
-        if: steps.gomod.outputs.present == 'true' && steps.setup-go.outcome != 'failure' && !cancelled()
+        if: steps.setup-go.outcome != 'failure' && !cancelled()
         run: go build ./...
 
       - name: go test
-        if: steps.gomod.outputs.present == 'true' && steps.setup-go.outcome != 'failure' && !cancelled()
+        if: steps.setup-go.outcome != 'failure' && !cancelled()
         run: go test ./... -race
