@@ -88,3 +88,15 @@ EvePingをコンテナイメージとして起動できるようにする。既�
 
 - Size: S
 - Hours: 5-7
+
+## Tasks Created
+
+- [ ] 001.md - マルチステージDockerfile + .dockerignore の追加 (parallel: true)
+- [ ] 002.md - 開発用docker-compose.ymlの追加 (parallel: true)
+- [ ] 003.md - READMEへのDockerビルド・起動手順の追記 (parallel: true)
+- [ ] 004.md - CIへのdocker buildビルド検証ステップ追加 (parallel: true)
+
+Total tasks: 4
+Parallel tasks: 4 (すべてTask 1完了後に並行着手可能)
+Sequential tasks: 0
+Estimated total effort: 5.5 hours
