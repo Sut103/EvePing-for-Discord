@@ -14,6 +14,12 @@ func New(session *discordgo.Session) Client {
 }
 
 func (c *discordgoClient) Guilds() []Guild {
+	// discordgo's gateway read-loop goroutine mutates State.Guilds (e.g. via
+	// GuildAdd/GuildRemove) under State's lock, so reads must take the same
+	// lock to avoid racing with it.
+	c.session.State.RLock()
+	defer c.session.State.RUnlock()
+
 	guilds := make([]Guild, 0, len(c.session.State.Guilds))
 	for _, g := range c.session.State.Guilds {
 		guilds = append(guilds, Guild{ID: g.ID})
