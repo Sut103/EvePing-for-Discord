@@ -92,7 +92,6 @@ go test ./...
   - `RunDailyBatch` — 上記を組み合わせ、全ギルド・全対象イベント・全ユーザーに対してDM送信を試行し、成功／失敗件数を集計する。
 - `internal/reminder` — DM本文のフォーマット（イベント名・開始日時・イベントURLを含む）。
 - `internal/scheduler` — `time.Ticker` を使い、注入可能な周期でコールバックを呼び続ける常駐ループ。
-- `dockerbuild` — アプリケーションコードは含まない、Docker関連ファイル（`Dockerfile`/`.dockerignore`/`docker-compose.yml`/CIワークフロー）の内容をテキストとして検証する静的アサーションテスト専用パッケージ。Dockerデーモンなしで `go test ./...` の一部として実行できる。
 - `Dockerfile` / `.dockerignore` — マルチステージビルド（Go公式イメージでビルド → 軽量な実行イメージ）によるコンテナイメージ定義。Botトークンはイメージに埋め込まず、コンテナ起動時の環境変数（`EVEPING_DISCORD_TOKEN`）としてのみ注入する。
 
 DB・KVストアは使用せず、全ての状態はバッチ実行のたびにDiscord APIから取得する（二重送信対策は実装しない設計判断について、詳細はGitHub Issue #4のEpicを参照）。

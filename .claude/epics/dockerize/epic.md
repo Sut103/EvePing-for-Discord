@@ -37,7 +37,9 @@ EvePingをコンテナイメージとして起動できるようにする。既�
 
 ## Test Strategy
 
-### Test Types & Tools
+**追記(実装後の方針変更)**: 以下のTest Strategyは策定当時(CCPMのTDD方針が全変更に一律適用されていた時点)のものであり、静的アサーションテスト(`dockerbuild/`パッケージ)は実際に書いて運用していた。その後CLAUDE.mdのTDD方針が「アプリケーションコード(`cmd/`・`internal/`配下)の変更に限る」とスコープ限定され、Dockerfile/docker-compose.yml/README/CI設定はいずれも対象外と判明したため、シンプルさを優先して `dockerbuild/` パッケージ(4テストファイル・11テスト)は削除した。各タスクファイルのTest Planに実施記録として残している。以降の検証はCode Review(目視)とCIの `docker build` ステップの成否のみに拠る。
+
+### Test Types & Tools(策定当時)
 - **静的アサーションテスト（自動・`go test`実行）**: 新設のテストファイルから、リポジトリルートの `Dockerfile` / `docker-compose.yml` をテキストとして読み込み、以下を機械的に検証する。
   - `Dockerfile` に複数の `FROM` 命令があること（マルチステージビルドになっていること）
   - `Dockerfile` 内に `EVEPING_DISCORD_TOKEN` の値がハードコードされていないこと（`ENV EVEPING_DISCORD_TOKEN=<値>` のような記述が存在しないこと）
@@ -78,7 +80,6 @@ EvePingをコンテナイメージとして起動できるようにする。既�
 
 ## Success Criteria (Technical)
 
-- 新規追加した静的アサーションテストが全てgreenになる。
 - `go build ./...` / `go vet ./...` / `go test ./...` が全て成功する。
 - （Docker環境がある場合の手動検証）`docker build .` が成功し、`docker run -e EVEPING_DISCORD_TOKEN=...` で `go run ./cmd/eveping` と同等にBotが起動する。
 - README の記述に従うだけでDocker起動ができる。
@@ -107,6 +108,6 @@ Estimated total effort: 5.5 hours
 - #22実装時にcode-reviewで検出: alpineランタイムに `ca-certificates` が無くDiscordへのTLS接続が失敗する重大な不具合を修正済み。あわせてCLAUDE.md/READMEのアーキテクチャ節を更新。
 - #23・#24・#25のcode-reviewでは指摘なし。
 
-静的アサーションテスト(`dockerbuild/`パッケージ)11件が全てgreen。`go build ./...` / `go vet ./...` / `go test ./...` も全て成功。
+**追記(簡素化)**: CLAUDE.mdのTDD方針スコープ限定(アプリケーションコードのみ)を受け、実装当時に書いていた静的アサーションテスト(`dockerbuild/`パッケージ、4ファイル・11テスト)は削除した。理由・実施記録は各タスクファイル・Test Strategy節参照。`go build ./...` / `go vet ./...` / `go test ./...` は削除後も全て成功。
 
 **訂正**: 当初「この実行環境にDockerデーモンが無い」と記載していたが誤りだった。`dockerd` バイナリは実装セッションの環境に存在し、手動起動できることを確認した。ただし起動したdockerdで実際に `docker build .` を試みたところ、サンドボックス固有のネットワーク制約(アウトバウンドHTTPSを透過的にインターセプトするプロキシがビルドコンテナ内から信頼されずAlpineの `apk add ca-certificates` がTLS検証エラーになる、およびDocker Hub匿名pullのレート制限)によりローカルでは成功しなかった。一方、GitHub Actions CI(サンドボックス外の通常のネットワーク環境)では `docker build .` ステップが実際に成功している([確認済みの実行](https://github.com/Sut103/EvePing-for-Discord/actions/runs/32193894776/job/95893861685)、20秒で完了) — これがDockerfile自体の正当性を示す実際の検証結果である。`docker run` によるDiscordへの実接続確認(実トークンが必要)と `docker compose up` の実起動確認は未実施のまま。`docker compose config` の静的パースはこの環境で確認済み。
