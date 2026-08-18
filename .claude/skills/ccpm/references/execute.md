@@ -135,8 +135,11 @@ Task:
     6. Update progress in: .claude/epics/<epic>/updates/<N>/stream-<X>.md, noting which Test Plan items are red vs green
     7. If you need to touch files outside your scope, note it in your progress file and wait
     8. Never use --force on git operations
+    9. Once all Test Plan items are green, run the `/code-review` skill against your stream's diff before marking completed:
+       - Critical findings (broken build, a Test Plan item that doesn't actually pass, security vulnerability, data loss) — fix immediately, re-run the relevant tests, and re-review. Do not mark completed with an open critical finding.
+       - Non-critical findings (style, minor simplification, low-confidence suggestions) — record them in your progress file for later triage; they do not block completion.
     
-    Complete your stream's work and mark status: completed when done — all Test Plan items must be green.
+    Complete your stream's work and mark status: completed when done — all Test Plan items must be green and `/code-review` has been run with no open critical findings.
 ```
 
 Streams with unmet dependencies are queued — launch them as their dependencies complete.
