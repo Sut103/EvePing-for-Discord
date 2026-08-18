@@ -19,8 +19,20 @@ func New(interval time.Duration, run func()) *Scheduler {
 	return &Scheduler{interval: interval, run: run, stop: make(chan struct{})}
 }
 
-// Start blocks, calling run() every interval, until Stop is called.
+// Start blocks, calling run() immediately and then again every interval,
+// until Stop is called. The immediate first call matters in production: on
+// every restart (crash, redeploy, host reboot) it re-evaluates "tomorrow"
+// right away instead of leaving a up-to-interval gap (24h) during which
+// events starting tomorrow would never be checked, since eveping keeps no
+// persisted state to catch up from later.
 func (s *Scheduler) Start() {
+	select {
+	case <-s.stop:
+		return
+	default:
+		s.run()
+	}
+
 	ticker := time.NewTicker(s.interval)
 	defer ticker.Stop()
 	for {
