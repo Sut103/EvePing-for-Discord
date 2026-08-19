@@ -39,6 +39,44 @@ func TestLoadToken_PresentEnv_ReturnsToken(t *testing.T) {
 	}
 }
 
+func TestDryRunEnabled_Unset_ReturnsFalse(t *testing.T) {
+	getenv := func(key string) string { return "" }
+
+	if dryRunEnabled(getenv) {
+		t.Fatal("expected dry-run to be disabled when the env var is unset")
+	}
+}
+
+func TestDryRunEnabled_True_ReturnsTrue(t *testing.T) {
+	for _, value := range []string{"true", "True", "TRUE", "1"} {
+		getenv := func(key string) string {
+			if key == dryRunEnvVar {
+				return value
+			}
+			return ""
+		}
+
+		if !dryRunEnabled(getenv) {
+			t.Fatalf("dryRunEnabled(%q) = false, want true", value)
+		}
+	}
+}
+
+func TestDryRunEnabled_False_ReturnsFalse(t *testing.T) {
+	for _, value := range []string{"false", "0", "no", "yes"} {
+		getenv := func(key string) string {
+			if key == dryRunEnvVar {
+				return value
+			}
+			return ""
+		}
+
+		if dryRunEnabled(getenv) {
+			t.Fatalf("dryRunEnabled(%q) = true, want false", value)
+		}
+	}
+}
+
 func TestLogBatchResult_IncludesCounts(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.New(&buf, "", 0)

@@ -54,8 +54,8 @@ go test ./...
 
 ## アーキテクチャ
 
-- `cmd/eveping/main.go` — エントリポイント。環境変数 `EVEPING_DISCORD_TOKEN` からBotトークンを読み込み（未設定ならエラー終了）、discordgoセッションを開始し、`internal/scheduler` を起動する。
-- `internal/discordclient` — discordgoとの結合点をインターフェース化した層（`Client` インターフェース: `Guilds`/`ScheduledEvents`/`EventUsers`/`SendDM`）。本番実装（discordgoラッパー、`discord.go`）とテスト用のインメモリFake（`fake.go`）を提供する。以降のロジックは全てこのインターフェース越しにテストする。
+- `cmd/eveping/main.go` — エントリポイント。環境変数 `EVEPING_DISCORD_TOKEN` からBotトークンを読み込み（未設定ならエラー終了）、discordgoセッションを開始し、`internal/scheduler` を起動する。環境変数 `EVEPING_DRY_RUN`（`true`/`1`）が設定されている場合、`discordclient.NewDryRun` でクライアントをラップしてからスケジューラに渡す（起動確認のたびに本物のリマインドDMが再送されるのを防ぐdry-runモード、詳細はGitHub Issue #19）。
+- `internal/discordclient` — discordgoとの結合点をインターフェース化した層（`Client` インターフェース: `Guilds`/`ScheduledEvents`/`EventUsers`/`SendDM`）。本番実装（discordgoラッパー、`discord.go`）とテスト用のインメモリFake（`fake.go`）を提供する。以降のロジックは全てこのインターフェース越しにテストする。`DryRunClient`（`dryrun.go`）は `Client` を埋め込んで `Guilds`/`ScheduledEvents`/`EventUsers` をそのまま委譲しつつ、`SendDM` だけをログ出力のみに差し替えるデコレータ。
 - `internal/batch` — バッチのコアロジック。`FilterTargetEvents`（翌日UTC判定+status絞り込みの純粋関数）、`FetchAllInterestedUsers`（ページネーション取得）、`SendReminderDM`（1件送信+エラーハンドリング）、`RunDailyBatch`（上記を組み合わせ全ギルド・全イベント・全ユーザーを走査し `BatchResult` を集計。個別失敗は分離し処理を継続する）。
 - `internal/reminder` — DM本文のフォーマット（`FormatReminder`: イベント名・UTC開始日時・イベントURLを含む）。
 - `internal/scheduler` — `time.Ticker` を使い、注入可能な周期でコールバックを呼び続ける常駐ループ（本番は24時間、テストはミリ秒単位を注入）。
