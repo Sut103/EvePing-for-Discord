@@ -1,0 +1,6 @@
+services:
+  eveping:
+    build: .
+    environment:
+      - EVEPING_DISCORD_TOKEN=${EVEPING_DISCORD_TOKEN}
+    restart: on-failure:5

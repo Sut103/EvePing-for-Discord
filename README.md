@@ -42,6 +42,30 @@ go run ./cmd/eveping
 
 起動すると、Botセッションを開いたのち内部スケジューラが24時間ごとに日次バッチ（`RunDailyBatch`）を実行する常駐プロセスとなる。標準出力にバッチの開始・終了・対象イベント数・DM送信の成功／失敗件数がログとして出力される。
 
+## Dockerでの起動
+
+Goツールチェインを用意せずに、コンテナイメージとしてビルド・起動することもできる。イメージには`EVEPING_DISCORD_TOKEN`を焼き込まないため、起動時に環境変数として渡す。
+
+### イメージのビルドと起動
+
+```bash
+docker build -t eveping .
+docker run -e EVEPING_DISCORD_TOKEN="xxxxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxx" eveping
+```
+
+### docker composeでの起動
+
+`docker-compose.yml` を使う場合、`EVEPING_DISCORD_TOKEN` を `.env` ファイル（コミットしないこと）等で用意した上で起動する。
+
+```bash
+echo 'EVEPING_DISCORD_TOKEN=xxxxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxx' > .env
+docker compose up
+```
+
+### ベースイメージの更新
+
+`Dockerfile` のベースイメージ（`golang`/`alpine`）はビルド再現性のためdigestで固定している。セキュリティパッチ等で更新する場合は、対象タグの最新digestを取得して `Dockerfile` の該当行を書き換えること。
+
 ## 開発用Discordサーバーでの手動検証手順
 
 自動テストはDiscord APIとの実通信を含まないため、実際にDMが届くことは以下の手順で目視確認する。
@@ -72,5 +96,6 @@ go test ./...
   - `RunDailyBatch` — 上記を組み合わせ、全ギルド・全対象イベント・全ユーザーに対してDM送信を試行し、成功／失敗件数を集計する。
 - `internal/reminder` — DM本文のフォーマット（イベント名・開始日時・イベントURLを含む）。
 - `internal/scheduler` — `time.Ticker` を使い、注入可能な周期でコールバックを呼び続ける常駐ループ。
+- `Dockerfile` / `.dockerignore` — マルチステージビルド（Go公式イメージでビルド → 軽量な実行イメージ）によるコンテナイメージ定義。Botトークンはイメージに埋め込まず、コンテナ起動時の環境変数（`EVEPING_DISCORD_TOKEN`）としてのみ注入する。
 
 DB・KVストアは使用せず、全ての状態はバッチ実行のたびにDiscord APIから取得する（二重送信対策は実装しない設計判断について、詳細はGitHub Issue #4のEpicを参照）。

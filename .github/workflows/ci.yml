@@ -55,3 +55,11 @@ jobs:
       - name: go test
         if: steps.setup-go.outcome != 'failure' && !cancelled()
         run: go test ./... -race
+
+      # Not gated on steps.setup-go.outcome: docker build builds its own Go
+      # toolchain inside the image and does not depend on the runner's host
+      # Go setup succeeding, so it still runs (and reports its own signal)
+      # even if the host-side Go steps above failed.
+      - name: docker build
+        if: ${{ !cancelled() }}
+        run: docker build .
