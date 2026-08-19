@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -21,6 +22,7 @@ import (
 
 const (
 	tokenEnvVar   = "EVEPING_DISCORD_TOKEN"
+	dryRunEnvVar  = "EVEPING_DRY_RUN"
 	batchInterval = 24 * time.Hour
 )
 
@@ -32,6 +34,14 @@ func loadToken(getenv func(string) string) (string, error) {
 		return "", errMissingToken
 	}
 	return token, nil
+}
+
+// dryRunEnabled reports whether EVEPING_DRY_RUN requests dry-run mode, so a
+// manual smoke-test startup can confirm connectivity and target
+// events/users without sending duplicate reminder DMs to real users.
+func dryRunEnabled(getenv func(string) string) bool {
+	value := getenv(dryRunEnvVar)
+	return value == "1" || strings.EqualFold(value, "true")
 }
 
 func logBatchResult(logger *log.Logger, start time.Time, result batch.BatchResult) {
@@ -77,6 +87,10 @@ func main() {
 	defer session.Close()
 
 	client := discordclient.New(session)
+	if dryRunEnabled(os.Getenv) {
+		logger.Printf("%s is set: dry-run mode enabled, reminder DMs will be logged but not sent", dryRunEnvVar)
+		client = discordclient.NewDryRun(client, logger)
+	}
 
 	sched := scheduler.New(batchInterval, func() {
 		runDailyBatch(client, logger)
