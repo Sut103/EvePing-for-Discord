@@ -2,7 +2,7 @@
 name: dockerize
 status: completed
 created: 2026-08-18T15:35:12Z
-updated: 2026-08-18T16:43:37Z
+updated: 2026-08-19T13:47:22Z
 progress: 100%
 prd: .claude/prds/dockerize.md
 github: https://github.com/Sut103/EvePing-for-Discord/issues/20
