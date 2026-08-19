@@ -62,6 +62,10 @@ echo 'EVEPING_DISCORD_TOKEN=xxxxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxx' > .env
 docker compose up
 ```
 
+### ベースイメージの更新
+
+`Dockerfile` のベースイメージ（`golang`/`alpine`）はビルド再現性のためdigestで固定している。セキュリティパッチ等で更新する場合は、対象タグの最新digestを取得して `Dockerfile` の該当行を書き換えること。
+
 ## 開発用Discordサーバーでの手動検証手順
 
 自動テストはDiscord APIとの実通信を含まないため、実際にDMが届くことは以下の手順で目視確認する。

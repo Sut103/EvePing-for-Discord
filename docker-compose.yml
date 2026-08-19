@@ -3,4 +3,4 @@ services:
     build: .
     environment:
       - EVEPING_DISCORD_TOKEN=${EVEPING_DISCORD_TOKEN}
-    restart: unless-stopped
+    restart: on-failure:5
