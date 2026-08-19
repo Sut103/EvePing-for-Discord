@@ -70,10 +70,12 @@ docker compose up
 
 自動テストはDiscord APIとの実通信を含まないため、実際にDMが届くことは以下の手順で目視確認する。
 
+Botは起動直後に即座に日次バッチを実行する設計のため（再起動のたびに「翌日」判定をやり直すため。詳細は`internal/scheduler`のコメントを参照）、接続確認だけしたい・DM送信はせずに済ませたい場合は `EVEPING_DRY_RUN=true` を設定して起動する。対象イベント・対象ユーザーの一覧はログに出力されるが、実際のDM送信は行われない。EvePingは二重送信対策を実装しない設計のため、通常起動での動作確認を繰り返すと同一イベントの興味ありユーザーへリマインドDMが重複して届く点に注意する。
+
 1. 開発用Discordサーバーに、セットアップ手順どおりBotを招待する。
 2. サーバー内で **開始日時が翌日（UTC基準）** のScheduled Eventを作成する。
 3. 検証用アカウントでそのイベントに対して「興味あり（Interested）」を押す。
-4. Botプロセスを起動し、バッチが実行されるのを待つ（本番の周期は24時間のため、動作確認時は一時的にコード側の `batchInterval` を短縮するか、`internal/batch.RunDailyBatch` を検証用スクリプトから直接呼び出して確認する）。
+4. `EVEPING_DRY_RUN` を設定せずBotプロセスを起動し、バッチが実行されるのを待つ（本番の周期は24時間のため、動作確認時は一時的にコード側の `batchInterval` を短縮するか、`internal/batch.RunDailyBatch` を検証用スクリプトから直接呼び出して確認する）。
 5. 検証用アカウントに、イベント名・開始日時・イベントリンクを含むDMが届くことを確認する。
 6. コンソールログに対象イベント数・送信成功数・送信失敗数が出力されていることを確認する。
 
@@ -88,7 +90,7 @@ go test ./...
 ## アーキテクチャ
 
 - `cmd/eveping/main.go` — エントリポイント。環境変数からBotトークンを読み込み、discordgoセッションを開始し、スケジューラを起動する。
-- `internal/discordclient` — discordgoとの結合点をインターフェース化した層。本番実装（discordgoラッパー）とテスト用のインメモリFakeを提供する。
+- `internal/discordclient` — discordgoとの結合点をインターフェース化した層。本番実装（discordgoラッパー）とテスト用のインメモリFakeを提供する。`DryRunClient`は`Client`をラップし、`SendDM`をログ出力のみに差し替える（`EVEPING_DRY_RUN`用、詳細はGitHub Issue #19）。
 - `internal/batch` — バッチのコアロジック（すべて `internal/discordclient.Client` を介した純粋・テスタブルな実装）。
   - `FilterTargetEvents` — 翌日（UTC）開始かつステータスがSCHEDULED/ACTIVEのイベントを抽出する純粋関数。
   - `FetchAllInterestedUsers` — 興味ありユーザーをページネーションしながら全件取得する。
