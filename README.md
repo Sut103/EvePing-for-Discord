@@ -53,9 +53,15 @@ docker build -t eveping .
 docker run -e EVEPING_DISCORD_TOKEN="xxxxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxx" eveping
 ```
 
+接続確認だけしたい場合は `-e EVEPING_DRY_RUN=true` を追加する（`EVEPING_DRY_RUN`の詳細は上記「環境変数の設定」を参照）。
+
+```bash
+docker run -e EVEPING_DISCORD_TOKEN="xxxxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxx" -e EVEPING_DRY_RUN=true eveping
+```
+
 ### docker composeでの起動
 
-`docker-compose.yml` を使う場合、`EVEPING_DISCORD_TOKEN` を `.env` ファイル（コミットしないこと）等で用意した上で起動する。
+`docker-compose.yml` を使う場合、`EVEPING_DISCORD_TOKEN`（および必要に応じて `EVEPING_DRY_RUN`）を `.env` ファイル（コミットしないこと）等で用意した上で起動する。
 
 ```bash
 echo 'EVEPING_DISCORD_TOKEN=xxxxxxxx.xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxx' > .env

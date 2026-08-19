@@ -3,4 +3,5 @@ services:
     build: .
     environment:
       - EVEPING_DISCORD_TOKEN=${EVEPING_DISCORD_TOKEN}
+      - EVEPING_DRY_RUN=${EVEPING_DRY_RUN:-}
     restart: on-failure:5
